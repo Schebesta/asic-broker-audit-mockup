@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASIC Broker Audit</title>
+  <style>
+    :root {
+      --blue: #1d53ff;
+      --blue-dark: #00155a;
+      --ink: #232021;
+      --muted: #6e6b63;
+      --line: #e6e5df;
+      --cream: #f7f6ec;
+      --surface: #ffffff;
+      --lime: #c3f53c;
+      --orange: #fe4f00;
+      --pink: #ff73a9;
+      --shadow: 0 18px 60px rgba(35, 32, 33, 0.12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      min-height: 100vh;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px clamp(20px, 5vw, 72px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(247, 246, 236, 0.92);
+    }
+
+    .logo {
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--blue);
+      letter-spacing: -0.08em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--surface);
+      white-space: nowrap;
+    }
+
+    .badge::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--lime);
+      border: 1px solid rgba(35, 32, 33, 0.18);
+    }
+
+    main {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(28px, 5vw, 72px) 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+      gap: clamp(24px, 5vw, 56px);
+      align-items: center;
+    }
+
+    .hero {
+      display: grid;
+      gap: 28px;
+    }
+
+    .eyebrow {
+      color: var(--orange);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(43px, 7vw, 82px);
+      line-height: 0.94;
+      letter-spacing: 0;
+      color: var(--blue-dark);
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 670px;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.42;
+      color: #49463f;
+    }
+
+    .proof-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 720px;
+    }
+
+    .proof {
+      min-height: 112px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+    }
+
+    .proof strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      color: var(--blue);
+      margin-bottom: 9px;
+    }
+
+    .proof span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .tool {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .tool-head {
+      background: var(--blue);
+      color: #fff;
+      padding: 24px;
+    }
+
+    .tool-head h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .tool-head p {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, 0.82);
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    form,
+    .result {
+      padding: 24px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 15px;
+    }
+
+    label {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #d9d8d2;
+      border-radius: 8px;
+      padding: 0 13px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    input:focus {
+      outline: 3px solid rgba(29, 83, 255, 0.18);
+      border-color: var(--blue);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-top: 20px;
+      align-items: center;
+    }
+
+    button,
+    .link-button {
+      appearance: none;
+      border: 0;
+      min-height: 50px;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      color: #fff;
+      background: var(--blue);
+      padding: 0 18px;
+    }
+
+    button[type="submit"]:hover,
+    .link-button:hover {
+      background: #0a41ee;
+    }
+
+    .ghost {
+      background: transparent;
+      color: var(--muted);
+      padding: 0 10px;
+    }
+
+    .ghost:hover {
+      color: var(--ink);
+      background: #f1f0eb;
+    }
+
+    .microcopy {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .result {
+      display: none;
+      border-top: 1px solid var(--line);
+      background: #fbfaf5;
+    }
+
+    .result.is-visible {
+      display: block;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 112px;
+    }
+
+    .metric .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric .value {
+      display: block;
+      margin-top: 10px;
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--blue-dark);
+    }
+
+    .metric.hot .value {
+      color: var(--orange);
+    }
+
+    .rate-bars {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0 4px;
+    }
+
+    .bar-row {
+      display: grid;
+      gap: 7px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .track {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #e8e6dd;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: var(--pink);
+      transition: width 320ms ease;
+    }
+
+    .fill.finder {
+      background: var(--lime);
+    }
+
+    .result-copy {
+      margin: 0;
+      color: #49463f;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 18px;
+      width: 100%;
+      color: #fff;
+      background: var(--blue);
+      text-decoration: none;
+      padding: 0 18px;
+    }
+
+    .error {
+      display: none;
+      margin: 14px 0 0;
+      color: #8f2500;
+      background: #fff0e8;
+      border: 1px solid #ffd1bc;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .error.is-visible {
+      display: block;
+    }
+
+    @media (max-width: 860px) {
+      header {
+        padding: 18px 20px;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      h1 {
+        font-size: clamp(39px, 13vw, 62px);
+      }
+
+      .proof-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .badge {
+        display: none;
+      }
+
+      .row,
+      .result-grid,
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-head,
+      form,
+      .result {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="logo" aria-label="Finder">finder</div>
+      <div class="badge">ASIC REP 840 audit concept</div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="eyebrow">Broker best interests check</div>
+        <h1 id="page-title">Did your broker show you the cheapest loan?</h1>
+        <p class="lead">ASIC found broker groups missed the cheapest rate in roughly 20% of reviewed cases. Run a quick audit against a Finder-style benchmark before you refinance.</p>
+
+        <div class="proof-strip" aria-label="Audit highlights">
+          <div class="proof">
+            <strong>20%</strong>
+            <span>of reviewed cases had a cheaper loan available, according to ASIC REP 840.</span>
+          </div>
+          <div class="proof">
+            <strong>30 sec</strong>
+            <span>to check your current lender, rate and balance against a benchmark.</span>
+          </div>
+          <div class="proof">
+            <strong>$0</strong>
+            <span>to audit before deciding whether a refinance comparison is worth it.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool" aria-labelledby="tool-title">
+        <div class="tool-head">
+          <h2 id="tool-title">Broker Audit Checker</h2>
+          <p>Current Bank + Rate + Balance -> a savings estimate you can inspect.</p>
+        </div>
+
+        <form id="audit-form" novalidate>
+          <div class="field">
+            <label for="bank">Current bank</label>
+            <input id="bank" name="bank" type="text" autocomplete="organization" placeholder="e.g. CBA" required>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="rate">Interest rate</label>
+              <input id="rate" name="rate" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="6.24" required>
+            </div>
+            <div class="field">
+              <label for="balance">Loan balance</label>
+              <input id="balance" name="balance" type="number" inputmode="numeric" min="1000" step="1000" placeholder="650000" required>
+            </div>
+          </div>
+
+          <div class="error" id="error-message" role="alert"></div>
+
+          <div class="button-row">
+            <button type="submit">Audit my loan</button>
+            <button class="ghost" type="button" id="reset-button">Reset</button>
+          </div>
+
+          <p class="microcopy">Indicative only. This mockup uses a benchmark rate for concept testing and is not financial advice.</p>
+        </form>
+
+        <div class="result" id="result" aria-live="polite">
+          <p class="result-copy" id="result-summary"></p>
+
+          <div class="result-grid">
+            <div class="metric hot">
+              <span class="label">Potential annual gap</span>
+              <span class="value" id="annual-gap">$0</span>
+            </div>
+            <div class="metric">
+              <span class="label">Benchmark rate</span>
+              <span class="value" id="benchmark-rate">0.00%</span>
+            </div>
+          </div>
+
+          <div class="rate-bars" aria-label="Rate comparison">
+            <div class="bar-row">
+              <div class="bar-label"><span>Your rate</span><span id="your-rate-label">0.00%</span></div>
+              <div class="track"><div class="fill" id="your-rate-bar"></div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label"><span>Finder benchmark</span><span id="finder-rate-label">0.00%</span></div>
+              <div class="track"><div class="fill finder" id="finder-rate-bar"></div></div>
+            </div>
+          </div>
+
+          <a class="link-button" href="https://www.finder.com.au/home-loans" target="_blank" rel="noreferrer">Compare refinance options</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById("audit-form");
+    const bank = document.getElementById("bank");
+    const rate = document.getElementById("rate");
+    const balance = document.getElementById("balance");
+    const result = document.getElementById("result");
+    const error = document.getElementById("error-message");
+    const resetButton = document.getElementById("reset-button");
+
+    const formatCurrency = new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: "AUD",
+      maximumFractionDigits: 0
+    });
+
+    function benchmarkFor(inputRate) {
+      if (inputRate >= 7) return 5.74;
+      if (inputRate >= 6.25) return 5.64;
+      if (inputRate >= 5.75) return 5.49;
+      return Math.max(4.99, inputRate - 0.28);
+    }
+
+    function showError(message) {
+      error.textContent = message;
+      error.classList.add("is-visible");
+      result.classList.remove("is-visible");
+    }
+
+    function clearError() {
+      error.textContent = "";
+      error.classList.remove("is-visible");
+    }
+
+    function setBar(id, value, max) {
+      const width = Math.max(8, Math.min(100, (value / max) * 100));
+      document.getElementById(id).style.width = width + "%";
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearError();
+
+      const lender = bank.value.trim();
+      const currentRate = Number(rate.value);
+      const loanBalance = Number(balance.value);
+
+      if (!lender || !Number.isFinite(currentRate) || !Number.isFinite(loanBalance)) {
+        showError("Add your bank, rate and loan balance to run the audit.");
+        return;
+      }
+
+      if (currentRate <= 0 || currentRate > 15) {
+        showError("Use a realistic home loan interest rate.");
+        return;
+      }
+
+      if (loanBalance < 1000) {
+        showError("Use a loan balance of at least $1,000.");
+        return;
+      }
+
+      const benchmarkRate = benchmarkFor(currentRate);
+      const rateGap = Math.max(0, currentRate - benchmarkRate);
+      const annualGap = Math.round(loanBalance * (rateGap / 100));
+      const maxRate = Math.max(currentRate, benchmarkRate, 7.5);
+
+      document.getElementById("result-summary").textContent =
+        rateGap > 0
+          ? `${lender} is ${rateGap.toFixed(2)} percentage points above this benchmark on the details entered.`
+          : `${lender} is already near this benchmark on the details entered.`;
+
+      document.getElementById("annual-gap").textContent = formatCurrency.format(annualGap);
+      document.getElementById("benchmark-rate").textContent = benchmarkRate.toFixed(2) + "%";
+      document.getElementById("your-rate-label").textContent = currentRate.toFixed(2) + "%";
+      document.getElementById("finder-rate-label").textContent = benchmarkRate.toFixed(2) + "%";
+      setBar("your-rate-bar", currentRate, maxRate);
+      setBar("finder-rate-bar", benchmarkRate, maxRate);
+
+      result.classList.add("is-visible");
+      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      clearError();
+      result.classList.remove("is-visible");
+      bank.focus();
+    });
+  </script>
+</body>
+</html>
